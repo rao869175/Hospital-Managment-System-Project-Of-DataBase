@@ -1,0 +1,154 @@
+/* create database */
+CREATE DATABASE hospital_db;
+USE hospital_db;
+
+
+/* Patients Table */
+CREATE TABLE Patients (
+    PatientID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Age INT CHECK (Age > 0),
+    Gender ENUM('Male', 'Female', 'Other'),
+    Address VARCHAR(100),
+    Contact VARCHAR(15) UNIQUE NOT NULL
+);
+
+/* Doctors Table */
+CREATE TABLE Doctors (
+    DoctorID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Specialization VARCHAR(100) NOT NULL,
+    Contact VARCHAR(15) UNIQUE NOT NULL
+);
+
+/* Appointments Table */
+CREATE TABLE Appointments (
+    AppointmentID INT AUTO_INCREMENT PRIMARY KEY,
+    PatientID INT,
+    DoctorID INT,
+    AppointmentDate DATE NOT NULL,
+    Diagnosis VARCHAR(100),
+    FOREIGN KEY (PatientID) REFERENCES Patients(PatientID) ON DELETE CASCADE,
+    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID) ON DELETE CASCADE
+);
+
+/* Billing Table */
+CREATE TABLE Billing (
+    BillID INT AUTO_INCREMENT PRIMARY KEY,
+    PatientID INT,
+    Amount DECIMAL(10,2) CHECK (Amount >= 0),
+    PaymentStatus ENUM('Paid', 'Pending') DEFAULT 'Pending',
+    FOREIGN KEY (PatientID) REFERENCES Patients(PatientID) ON DELETE CASCADE
+);
+
+/* Medications Table */
+CREATE TABLE Medications (
+    MedicationID INT AUTO_INCREMENT PRIMARY KEY,
+    PatientID INT,
+    MedicineName VARCHAR(100) NOT NULL,
+    Dosage VARCHAR(50),
+    Duration VARCHAR(50),
+    FOREIGN KEY (PatientID) REFERENCES Patients(PatientID) ON DELETE CASCADE
+);
+
+/* Staff Table */
+CREATE TABLE Staff (
+    StaffID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Role VARCHAR(50),
+    Contact VARCHAR(15) UNIQUE NOT NULL,
+    Salary DECIMAL(10,2) CHECK (Salary >= 0)
+);
+
+/* Payments Table */
+CREATE TABLE Payments (
+    PaymentID INT AUTO_INCREMENT PRIMARY KEY,
+    BillID INT,
+    PaymentDate DATE DEFAULT (CURRENT_DATE),
+    AmountPaid DECIMAL(10,2) CHECK (AmountPaid >= 0),
+    PaymentMethod ENUM('Cash', 'Credit Card', 'Bank Transfer'),
+    FOREIGN KEY (BillID) REFERENCES Billing(BillID) ON DELETE CASCADE
+);
+
+
+
+
+
+/* Insert into Patients */
+INSERT INTO Patients (Name, Age, Gender, Address, Contact)
+VALUES 
+    ('John Doe', 30, 'Male', 'Shujabad', '1234567890'),
+    ('Annas Khan', 37, 'Male', 'Multan', '1234012345');
+
+/* Insert into Doctors */
+INSERT INTO Doctors (Name, Specialization, Contact)
+VALUES 
+    ('Dr. Smith', 'Cardiologist', '9876543210'),
+    ('Dr. Maria', 'Neurologist', '8765432109');
+
+/* Insert into Appointments */
+INSERT INTO Appointments (PatientID, DoctorID, AppointmentDate, Diagnosis)
+VALUES 
+    (1, 1, '2025-03-25', 'High Blood Pressure'),
+    (2, 2, '2025-03-30', 'Migraine');
+
+/* Insert into Billing */
+INSERT INTO Billing (PatientID, Amount, PaymentStatus)
+VALUES 
+    (1, 500.00, 'Pending'),
+    (2, 700.00, 'Paid');
+
+/* Insert into Medications */
+INSERT INTO Medications (PatientID, MedicineName, Dosage, Duration)
+VALUES 
+    (1, 'Aspirin', '1 Tablet', '7 Days'),
+    (2, 'Paracetamol', '2 Tablets', '5 Days');
+
+/* Insert into Staff */
+INSERT INTO Staff (Name, Role, Contact, Salary)
+VALUES 
+    ('Ali Raza', 'Nurse', '9998887776', 30000),
+    ('Sarah Ahmed', 'Receptionist', '9998887775', 25000);
+    
+
+/* Insert into Payments */
+INSERT INTO Payments (BillID, AmountPaid, PaymentMethod)
+VALUES 
+    (2, 700.00, 'Credit Card');
+
+
+
+/* View Patients */
+SELECT * FROM Patients;
+
+/* View Doctors */
+SELECT * FROM Doctors;
+
+/* View Appointments */
+SELECT  a.AppointmentID,  p.Name AS Patient,d.Name AS Doctor,   a.AppointmentDate,a.Diagnosis 
+    
+FROM Appointments a
+JOIN Patients p ON a.PatientID = p.PatientID
+JOIN Doctors d ON a.DoctorID = d.DoctorID;
+
+/* View Billing */
+SELECT  b.BillID,   p.Name AS Patient,  b.Amount, b.PaymentStatus 
+  
+FROM Billing b
+JOIN Patients p ON b.PatientID = p.PatientID;
+
+/* View Medications */
+SELECT  m.MedicationID,  p.Name AS Patient,  m.MedicineName, m.Dosage,m.Duration
+FROM Medications m
+JOIN Patients p ON m.PatientID = p.PatientID;
+
+/* View Staff */
+SELECT * FROM Staff;
+
+
+/* View Payments */
+SELECT 
+    pay.PaymentID,   b.BillID,    p.Name AS Patient,  pay.PaymentDate, pay.AmountPaid,    pay.PaymentMethod   
+FROM Payments pay
+JOIN Billing b ON pay.BillID = b.BillID
+JOIN Patients p ON b.PatientID = p.PatientID;
