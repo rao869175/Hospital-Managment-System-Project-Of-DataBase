@@ -1,6 +1,6 @@
 # Hospital Management System
 
-![Hospital Logo](media/image1.png)
+![Muhammad Nawaz Shareef University of Agriculture Logo](MNS.png)
 
 ## Project Overview
 This project is a **Hospital Management System** designed to efficiently manage hospital operations, including patient records, doctor details, appointments, medical records, and billing. It serves as a comprehensive database solution for healthcare institutions.
@@ -63,10 +63,3 @@ The Hospital Management System database is meticulously designed to streamline h
 - Billing and payments.
 
 For further details, refer to the full project report.
-
-
-
-
-
-
-
